@@ -122,6 +122,17 @@ struct Icsp {
 
 };
 
+void print_progress(unsigned int now, unsigned int limit) {
+	std::stringstream s;
+	s << "\r[";
+	size_t x = now * 73 / (limit + 1);
+	for (size_t i = 0; i < x; ++i) s << '=';
+	if (x != 72) { s << '>'; ++x; }
+	for (; x < 72; ++x) s << ' ';
+	s << "] " << (now * 101 / limit) << '%';
+	std::cerr << s.str();
+}
+
 int main(int argc, char * * argv) try {
 
 	if (argc < 2 || argv[1] == std::string("help")) {
@@ -162,6 +173,8 @@ int main(int argc, char * * argv) try {
 		std::clog << "Connected to " << device_name << "." << std::endl;
 	}
 
+	bool showprogress = isatty(fileno(stderr)) && !isatty(fileno(stdout));
+
 	if (argc == 3 && argv[2] == std::string("config")) {
 		d.load_configuration(0);
 		char const *names[] = {
@@ -178,35 +191,27 @@ int main(int argc, char * * argv) try {
 		}
 
 	} else if (argc == 3 && argv[2] == std::string("dump")) {
-		bool showprogress = isatty(fileno(stderr)) && !isatty(fileno(stdout));
 		std::clog << "Downloading program memory..." << std::endl;
 		d.reset_address();
-		for (unsigned int a = 0; a < 0x4000; a += 2) {
+		for (unsigned int a = 0; a <= 0x3FFE; a += 2) {
 			uint16_t v = d.read_data();
 			d.increment_address();
 			uint8_t checksum = 0x100 - 0x02 - (a & 0xFF) - (a >> 8) - (v & 0xFF) - (v >> 8);
 			printf(":02%04X00%02X%02X%02X\n", a, v & 0xFF, v >> 8, checksum);
-			if (showprogress) {
-				std::stringstream s;
-				s << "\r[";
-				size_t x = (a * 73 / 0x4000);
-				for (size_t i = 0; i < x; ++i) s << '=';
-				if (x != 72) { s << '>'; ++x; }
-				for (; x < 72; ++x) s << ' ';
-				s << "] " << (a * 100 / (0x4000 - 1)) << '%';
-				std::cerr << s.str();
-			}
+			if (showprogress) print_progress(a, 0x3FFE);
 		}
 		if (showprogress) std::clog << std::endl;
 		std::clog << "Downloading configuration..." << std::endl;
 		printf(":020000040001F9\n");
 		d.load_configuration(0);
-		for (unsigned int a = 0; a < 21; a += 2) {
+		for (unsigned int a = 0; a <= 20; a += 2) {
 			uint16_t v = d.read_data();
 			d.increment_address();
 			uint8_t checksum = 0x100 - 0x02 - (a & 0xFF) - (a >> 8) - (v & 0xFF) - (v >> 8);
 			printf(":02%04X00%02X%02X%02X\n", a, v & 0xFF, v >> 8, checksum);
+			if (showprogress) print_progress(a, 20);
 		}
+		if (showprogress) std::clog << std::endl;
 		printf(":00000001FF\n");
 		std::clog << "Done." << std::endl;
 
