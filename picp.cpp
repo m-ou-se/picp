@@ -113,7 +113,7 @@ struct Icsp {
 	void load_data(uint16_t v) { p.write('L'); write_value(v); }
 	uint16_t read_data() { p.write('R'); return read_value(); }
 	void increment_address() { p.write('I'); }
-	void reset_address() { p.write('R'); }
+	void reset_address() { p.write('A'); }
 	void begin_programming() { p.write('P'); }
 	void begin_externally_timed_programming() { p.write('Q'); }
 	void end_externally_timed_programming() { p.write('S'); }
