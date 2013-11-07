@@ -215,6 +215,22 @@ int main(int argc, char * * argv) try {
 		printf(":00000001FF\n");
 		std::clog << "Done." << std::endl;
 
+	} else if (argc == 3 && argv[2] == std::string("erase")) {
+		std::clog << "Erasing..." << std::endl;
+		d.reset_address();
+		d.bulk_erase();
+		usleep(5000);
+		d.test();
+		std::clog << "Done." << std::endl;
+
+	} else if (argc == 3 && argv[2] == std::string("eraseall")) {
+		std::clog << "Erasing..." << std::endl;
+		d.load_configuration(0);
+		d.bulk_erase();
+		usleep(5000);
+		d.test();
+		std::clog << "Done." << std::endl;
+
 	//} else if (argc == 3 && argv[2] == std::string("program")) {
 		// TODO
 		// d.bulk_erase();
