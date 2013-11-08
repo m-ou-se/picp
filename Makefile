@@ -1,2 +1,2 @@
 picp: picp.cpp
-	$(CXX) -Wall -Wextra -g -O2 -o $@ $^
+	$(CXX) -std=c++11 -Wall -Wextra -g -O2 -o $@ $^
