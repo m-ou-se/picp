@@ -162,7 +162,7 @@ struct memory_dump {
 			size_t address = hex_byte(line, 3) << 8 | hex_byte(line, 5);
 			uint8_t type = hex_byte(line, 7);
 			if (type == 0x00) {
-				if (size % 2 != 0) throw std::runtime_error("Only data records with an even number of bytes are supported.");
+				if (size % 2 != 0 || address % 2 != 0) throw std::runtime_error("Only data records with an even number of bytes on even addresses are supported.");
 				for (size_t i = 0; i < size / 2; ++i) {
 					size_t a = (address_offset + address) / 2 + i;
 					uint16_t value = hex_byte(line, 9 + i * 4 + 2) << 8 | hex_byte(line, 9 + i * 4);
@@ -233,9 +233,10 @@ void verify_failure(char const * part, uint16_t good, uint16_t bad) {
 
 int main(int argc, char * * argv) try {
 
-	if (argc < 2 || argv[1] == std::string("help")) {
+	if (argc < 2) {
 		std::clog << "Usage: \n";
-		std::clog << '\t' << argv[0] << " /dev/tty...\n\t\tReset device and check connection.\n\n";
+		std::clog << '\t' << argv[0] << " /dev/tty...\n\t\tCheck connection with programmer.\n\n";
+		std::clog << '\t' << argv[0] << " /dev/tty... reset\n\t\tReset target.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... config\n\t\tShow the configuration words.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... dump [> file]\n\t\tRead the program and configuration memory, and dump it in intel hex format.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... erase\n\t\tErase the program and configuration memory, excluding the four user id words.\n\n";
@@ -249,35 +250,40 @@ int main(int argc, char * * argv) try {
 	std::clog << d.version() << std::endl;
 	std::clog << "Connected to programmer." << std::endl;
 
-	std::clog << "Resetting target..." << std::endl;
-	d.end();
-	usleep(250000);
-	d.begin();
+	uint16_t revision_id = 0;
+	uint16_t device_id = 0;
 
-	d.load_configuration(0);
-	for (size_t i = 0; i < 5; ++i) d.increment_address();
-	uint16_t revision_id = d.read_data();
-	d.increment_address();
-	uint16_t device_id = d.read_data();
-	{
-		std::string device_name = "unknown device";
-		if      (device_id == 0x3020) device_name = "PIC16F1454";
-		else if (device_id == 0x3024) device_name = "PIC16LF1454";
-		else if (device_id == 0x3021) device_name = "PIC16F1455";
-		else if (device_id == 0x3025) device_name = "PIC16LF1455";
-		else if (device_id == 0x3023) device_name = "PIC16F1459";
-		else if (device_id == 0x3027) device_name = "PIC16LF1459";
-		else if (device_id == 0x3FFF) {
-			std::clog << "No target found." << std::endl;
-			d.end();
-			return 1;
+	auto connect = [&] {
+		std::clog << "Resetting target..." << std::endl;
+		d.end();
+		usleep(250000);
+		d.begin();
+
+		d.load_configuration(0);
+		for (size_t i = 0; i < 5; ++i) d.increment_address();
+		revision_id = d.read_data();
+		d.increment_address();
+		device_id = d.read_data();
+		{
+			std::string device_name = "unknown device";
+			if      (device_id == 0x3020) device_name = "PIC16F1454";
+			else if (device_id == 0x3024) device_name = "PIC16LF1454";
+			else if (device_id == 0x3021) device_name = "PIC16F1455";
+			else if (device_id == 0x3025) device_name = "PIC16LF1455";
+			else if (device_id == 0x3023) device_name = "PIC16F1459";
+			else if (device_id == 0x3027) device_name = "PIC16LF1459";
+			else if (device_id == 0x3FFF) throw std::runtime_error("No target found.");
+			std::clog << "Connected to " << device_name << "." << std::endl;
 		}
-		std::clog << "Connected to " << device_name << "." << std::endl;
-	}
+	};
 
 	bool showprogress = isatty(fileno(stderr));
 
-	if (argc == 3 && argv[2] == std::string("config")) {
+	if (argc == 3 && argv[2] == std::string("reset")) {
+		connect();
+
+	} else if (argc == 3 && argv[2] == std::string("config")) {
+		connect();
 		d.load_configuration(0);
 		char const *names[] = {
 			"User ID 0", "User ID 1", "User ID 2", "User ID 3",
@@ -293,6 +299,7 @@ int main(int argc, char * * argv) try {
 		}
 
 	} else if (argc == 3 && argv[2] == std::string("dump")) {
+		connect();
 		showprogress &= !isatty(fileno(stdout));
 		std::clog << "Downloading program memory..." << std::endl;
 		d.reset_address();
@@ -319,6 +326,7 @@ int main(int argc, char * * argv) try {
 		std::clog << "Done." << std::endl;
 
 	} else if (argc == 3 && argv[2] == std::string("erase")) {
+		connect();
 		std::clog << "Erasing..." << std::endl;
 		d.reset_address();
 		d.bulk_erase();
@@ -327,6 +335,7 @@ int main(int argc, char * * argv) try {
 		std::clog << "Done." << std::endl;
 
 	} else if (argc == 3 && argv[2] == std::string("eraseall")) {
+		connect();
 		std::clog << "Erasing..." << std::endl;
 		d.load_configuration(0);
 		d.bulk_erase();
@@ -338,6 +347,7 @@ int main(int argc, char * * argv) try {
 		memory_dump m;
 		std::clog << "Reading Intel HEX formatted data..." << std::endl;
 		m.load_ihex(std::cin);
+		connect();
 		if (m.device_id_set) {
 			if (m.device_id == device_id) {
 				std::clog << "Device ID matches." << std::endl;
@@ -422,7 +432,7 @@ int main(int argc, char * * argv) try {
 
 	} else {
 		std::clog << "Unknown command '" << argv[2] << "'." << std::endl;
-		std::clog << "Run '" << argv[0] << " help' for help." << std::endl;
+		std::clog << "Run '" << argv[0] << "' (without arguments) for help." << std::endl;
 		return 1;
 	}
 
