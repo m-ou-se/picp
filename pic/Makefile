@@ -23,5 +23,5 @@ clean:
 	rm -rf build
 
 upload: build/$(TARGET).hex
-	picp /dev/ttyUSB0 program < $<
+	picp program < $<
 
