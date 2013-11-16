@@ -166,6 +166,7 @@ struct memory_dump {
 				for (size_t i = 0; i < size / 2; ++i) {
 					size_t a = (address_offset + address) / 2 + i;
 					uint16_t value = hex_byte(line, 9 + i * 4 + 2) << 8 | hex_byte(line, 9 + i * 4);
+					value &= 0x3FFF;
 					if (a < 0x2000) {
 						memory[a] = value;
 						memory_used = std::max(a + 1, memory_used);
