@@ -223,19 +223,34 @@ void verify_failure(char const * part, uint16_t good, uint16_t bad) {
 
 int main(int argc, char * * argv) try {
 
-	if (argc < 2) {
+	if (argc <= 1) {
 		std::clog << "Usage: \n";
-		std::clog << '\t' << argv[0] << " /dev/tty...\n\t\tCheck connection with programmer.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... reset\n\t\tReset target.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... config\n\t\tShow the configuration words.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... dump [> file]\n\t\tRead the program and configuration memory, and dump it in Intel HEX format.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... program [< file]\n\t\tFlash the given program (and optionally, configuration and user id words) (in Intel HEX format) to the connected chip.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... erase\n\t\tErase the program and configuration memory, excluding the four user id words.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... eraseall\n\t\tErase the program and configuration memory, including the four user id words.\n\n";
+		std::clog << '\t' << argv[0] << " /dev/picp0\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] check\n\t\tCheck connection with programmer.\n\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] reset\n\t\tReset target.\n\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] config\n\t\tShow the configuration words.\n\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] dump [> file]\n\t\tRead the program and configuration memory, and dump it in Intel HEX format.\n\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] program [< file]\n\t\tFlash the given program (and optionally, configuration and user id words) (in Intel HEX format) to the connected chip.\n\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] erase\n\t\tErase the program and configuration memory, excluding the four user id words.\n\n";
+		std::clog << '\t' << argv[0] << " [/dev/picp0] eraseall\n\t\tErase the program and configuration memory, including the four user id words.\n\n";
 		return 1;
 	}
 
-	Port p(argv[1]);
+	char const * dev = "/dev/picp0";
+	std::string command;
+	size_t n_args = 0;
+	if (argv[1] && argv[1][0] == '/') {
+		dev = argv[1];
+		if (argv[2]) {
+			command = argv[2];
+			n_args = argc - 3;
+		}
+	} else {
+		if (argv[1]) command = argv[1];
+		n_args = argc - 2;
+	}
+
+	Port p(dev);
 	Icsp d(p);
 
 	std::clog << d.version() << std::endl;
@@ -270,10 +285,13 @@ int main(int argc, char * * argv) try {
 
 	bool showprogress = isatty(fileno(stderr));
 
-	if (argc == 3 && argv[2] == std::string("reset")) {
+	if (n_args == 0 && (command == "" || command == "check")) {
+		return 0;
+
+	} else if (n_args == 0 && command == "reset") {
 		connect();
 
-	} else if (argc == 3 && argv[2] == std::string("config")) {
+	} else if (n_args == 0 && command == "config") {
 		connect();
 		d.load_configuration(0);
 		char const *names[] = {
@@ -289,7 +307,7 @@ int main(int argc, char * * argv) try {
 			d.increment_address();
 		}
 
-	} else if (argc == 3 && argv[2] == std::string("dump")) {
+	} else if (n_args == 0 && command == "dump") {
 		connect();
 		showprogress &= !isatty(fileno(stdout));
 		std::clog << "Downloading program memory..." << std::endl;
@@ -316,7 +334,7 @@ int main(int argc, char * * argv) try {
 		printf(":00000001FF\n");
 		std::clog << "Done." << std::endl;
 
-	} else if (argc == 3 && argv[2] == std::string("erase")) {
+	} else if (n_args == 0 && command == "erase") {
 		connect();
 		std::clog << "Erasing..." << std::endl;
 		d.reset_address();
@@ -325,7 +343,7 @@ int main(int argc, char * * argv) try {
 		d.test();
 		std::clog << "Done." << std::endl;
 
-	} else if (argc == 3 && argv[2] == std::string("eraseall")) {
+	} else if (n_args == 0 && command == "eraseall") {
 		connect();
 		std::clog << "Erasing..." << std::endl;
 		d.load_configuration(0);
@@ -334,7 +352,7 @@ int main(int argc, char * * argv) try {
 		d.test();
 		std::clog << "Done." << std::endl;
 
-	} else if (argc == 3 && argv[2] == std::string("program")) {
+	} else if (n_args == 0 && command == "program") {
 		memory_dump m;
 		std::clog << "Reading Intel HEX formatted data..." << std::endl;
 		m.load_ihex(std::cin);
@@ -421,8 +439,8 @@ int main(int argc, char * * argv) try {
 		}
 		std::clog << "Done." << std::endl;
 
-	} else if (argc > 2) {
-		std::clog << "Unknown command '" << argv[2] << "'." << std::endl;
+	} else {
+		std::clog << "Unknown command." << std::endl;
 		std::clog << "Run '" << argv[0] << "' (without arguments) for help." << std::endl;
 		return 1;
 	}
