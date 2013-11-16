@@ -67,13 +67,14 @@ ROM BYTE configDescriptor1[] = {
 
 	// Endpoint Descriptor
 	0x07,
-	USB_DESCRIPTOR_ENDPOINT,    //Endpoint Descriptor
+	USB_DESCRIPTOR_ENDPOINT,
 	_EP01_IN,   // endpoint address
 	_INTERRUPT, // attributes
 	0x08,0x00,  // size
 	0x02,       // interval
 
 	// Interface Descriptor
+	0x09,
 	USB_DESCRIPTOR_INTERFACE,
 	1,           // interface number
 	0,           // Alternate setting number
