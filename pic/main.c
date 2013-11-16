@@ -47,19 +47,15 @@ void icsp_bit(char x) {
 	LATC &= ~(1 << 1);
 }
 
-void icsp_init() {
-	TRISC = ~7; // Use RC0 RC1 and RC2 as outputs
-	LATC = 1 << 2; // Data and clock low, !mclr high
-}
-
 void icsp_begin() {
+	TRISC = ~7; // Use RC0 RC1 and RC2 as outputs
 	LATC = 0;
 	for (size_t i = 0; i < 32; ++i) icsp_bit(0x4D434850 >> i & 1);
 	icsp_bit(0);
 }
 
 void icsp_end() {
-	LATC = 1 << 2;
+	TRISC = ~0;
 }
 
 void icsp_cmd(char c) {
@@ -118,8 +114,6 @@ int main(void) {
 	OPTION_REG &= 0x7F; // WPUEN
 	WPUA = 1 << 5;
 	USBDeviceInit();
-
-	icsp_init();
 
 	while (1) {
 		while (!usb_tasks());

@@ -11,6 +11,8 @@ somehow, but after that, you have a very simple and cheap programmer.)
 No additional circuit is required, the USB wires are directly connected to the
 programmer PIC, and the pins of that PIC are directly connected to the PIC
 that's to be programmed.
+The reset, data and clock pins are set to high impedance while not programming,
+so the programmer can be left connected while running your application.
 
 It's probably pretty easy to port the PC software to other operating systems.
 
@@ -45,7 +47,7 @@ The commands are:
 | `'V'`   | Get the programmer version | A newline (`\n`) terminated version string (in ASCII).
 | `'T'`   | No operation (for testing) | One byte: `'Y'`
 | `'B'`   | Begin program mode: Pull the reset pin low, and clock in the magic number 0x4D434850 to get the chip in low voltage programming mode.
-| `'E'`   | End program mode: Make the reset pin high again.
+| `'E'`   | End program mode: Set the reset, data and clock pins back to high impedance mode.
 
 Furthermore, the following commmands map directly to the commands specified in the
 [PIC16(L)F145X Programming Specification](http://ww1.microchip.com/downloads/en/DeviceDoc/41620C.pdf):
