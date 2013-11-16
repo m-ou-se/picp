@@ -238,7 +238,8 @@ int main(int argc, char * * argv) try {
 		std::clog << '\t' << argv[0] << " /dev/tty...\n\t\tCheck connection with programmer.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... reset\n\t\tReset target.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... config\n\t\tShow the configuration words.\n\n";
-		std::clog << '\t' << argv[0] << " /dev/tty... dump [> file]\n\t\tRead the program and configuration memory, and dump it in intel hex format.\n\n";
+		std::clog << '\t' << argv[0] << " /dev/tty... dump [> file]\n\t\tRead the program and configuration memory, and dump it in Intel HEX format.\n\n";
+		std::clog << '\t' << argv[0] << " /dev/tty... program [< file]\n\t\tFlash the given program (and optionally, configuration and user id words) (in Intel HEX format) to the connected chip.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... erase\n\t\tErase the program and configuration memory, excluding the four user id words.\n\n";
 		std::clog << '\t' << argv[0] << " /dev/tty... eraseall\n\t\tErase the program and configuration memory, including the four user id words.\n\n";
 		return 1;
@@ -430,7 +431,7 @@ int main(int argc, char * * argv) try {
 		}
 		std::clog << "Done." << std::endl;
 
-	} else {
+	} else if (argc > 2) {
 		std::clog << "Unknown command '" << argv[2] << "'." << std::endl;
 		std::clog << "Run '" << argv[0] << "' (without arguments) for help." << std::endl;
 		return 1;
