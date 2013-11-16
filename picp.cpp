@@ -423,7 +423,7 @@ int main(int argc, char * * argv) try {
 					d.begin_programming();
 					usleep(5000);
 					uint16_t v = d.read_data();
-					if (v != m.configuration[i]) verify_failure("configuration bits", m.user_id[i], v);
+					if (v != m.configuration[i]) verify_failure("configuration bits", m.configuration[i], v);
 					d.increment_address();
 					if (showprogress) print_progress(i, 1);
 				}
