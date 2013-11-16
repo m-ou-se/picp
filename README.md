@@ -12,11 +12,13 @@ No additional circuit is required, the USB wires are directly connected to the
 programmer PIC, and the pins of that PIC are directly connected to the PIC
 that's to be programmed.
 
+It's probably pretty easy to port the PC software to other operating systems.
+
 Usage
 -----
 
 1. Program a PIC16F154x with the software in `/pic/`.
-2. Compile the software in `/pc/` and put the `picp` executale somewhere in your `PATH`. (e.g. `/usr/local/bin`)
+2. Compile the software in `/pc/` and put the resulting `picp` executable somewhere in your `PATH`. (e.g. `/usr/local/bin`)
 3. Copy `/udev/40-picp.rules` to `/etc/udev/rules.d/`.
 4. Connect the ICSP pins (RC0 and RC1) of the programmer and the
    to-be-programmed chip, and connect RC2 of the programmer to the reset pin
@@ -64,3 +66,33 @@ Furthermore, the following commmands map directly to the commands specified in t
 Parameters and replies are 14 bits, encoded as two bytes with the most significant bits set:
 The least significant 7 of the first byte contain the most significant 7 bits of the data,
 the least significant 7 bits of the second byte contain the least significant 7 bits of the data.
+
+Schematic
+---------
+
+This is how you should connect the programmer and the target, for the 14-pin packages:
+
+          .-------------.
+          |    +------+  '-------[5V]---
+          +----|1   14|-----+----[GND]--    USB
+          |   -|2   13|-----|----[D+]---  (to PC)
+          |   -|3   12|-----|----[D-]---
+          |   -|4   11|-    |
+          |   -|5   10|-----|--.
+          |   -|6    9|-----|-----.
+          |   -|7    8|-.   |  |  |
+          |    +------+ |   |  |  |
+          |   Programmer|   |  |  |
+          |             |   |  |  |
+     .----|-------------'   |  |  |
+     |    |                 |  |  |
+     |    |    +------+     |  |  |
+     |    '----|1   14|-----'  |  |
+     |        -|2   13|-       |  |
+     |        -|3   12|-       |  |
+     '-[Reset]-|4   11|-       |  |
+              -|5   10|-[Data]-'  |
+              -|6    9|-[Clock]---'
+              -|7    8|-
+               +------+
+              Target
