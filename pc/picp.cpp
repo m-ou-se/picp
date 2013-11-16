@@ -23,21 +23,11 @@ private:
 	Port(Port const &);
 	Port & operator = (Port const &);
 
-	termios old_termstate;
-
 public:
 
 	Port(char const * f) {
 		fd = open(f, O_RDWR);
 		if (fd < 0) throw std::runtime_error("Unable to open file.");
-		termios termstate;
-		tcgetattr(fd, &termstate);
-		old_termstate = termstate;
-		termstate.c_iflag = IGNBRK | IGNPAR;
-		termstate.c_oflag = 0;
-		termstate.c_cflag = B115200 | CS8 | CREAD | CLOCAL;
-		termstate.c_lflag = 0;
-		tcsetattr(fd, TCSANOW, &termstate);
 	}
 
 	void write(uint8_t b) {
@@ -66,7 +56,6 @@ public:
 	}
 
 	~Port() {
-		tcsetattr(fd, TCSANOW, &old_termstate);
 		close(fd);
 	}
 
