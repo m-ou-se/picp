@@ -1,3 +1,6 @@
+PICP
+====
+
 This folder contains 'picp', a PIC16F145x based PIC16F145x programmer.
 
 To program a PIC16F145x with this, all you need is a PIC16F145x programmed
@@ -9,7 +12,8 @@ No additional circuit is required, the USB wires are directly connected to the
 programmer PIC, and the pins of that PIC are directly connected to the PIC
 that's to be programmed.
 
-== Usage ==
+Usage
+-----
 
 1. Program a PIC16F154x with the software in /pic/.
 2. Compile the software in /pc/ and put the 'picp' executale in your PATH.
