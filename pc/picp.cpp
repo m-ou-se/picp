@@ -24,7 +24,7 @@ public:
 
 	Port(char const * f) {
 		fd = open(f, O_RDWR);
-		if (fd < 0) throw std::runtime_error("Unable to open file.");
+		if (fd < 0) throw std::runtime_error(std::string("Unable to open ") + f + ".");
 	}
 
 	void write(uint8_t b) {
