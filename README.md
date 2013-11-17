@@ -19,7 +19,7 @@ It's probably pretty easy to port the PC software to other operating systems.
 Usage
 -----
 
-1. Program a PIC16F154x with the software in `pic/`.
+1. Program a PIC16F145x with the software in `pic/`.
 2. Compile the software in `pc/` and put the resulting `picp` executable somewhere in your `PATH`. (e.g. `/usr/local/bin`)
 3. Copy `udev/40-picp.rules` to `/etc/udev/rules.d/`.
 4. Connect the ICSP pins (RC0 and RC1) of the programmer and the
@@ -98,3 +98,8 @@ This is how you should connect the programmer and the target, for the 14-pin pac
               -|7    8|-
                +------+
                 Target
+
+Contact
+-------
+
+If you have any questions, feel free to contact me: https://m-ou.se/contact
