@@ -10,9 +10,6 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <termios.h>
-#include <linux/serial.h>
-#include <sys/ioctl.h>
 #include <sys/select.h>
 
 struct Port {
