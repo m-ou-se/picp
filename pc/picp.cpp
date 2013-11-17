@@ -46,8 +46,8 @@ public:
 		{
 			uint8_t b;
 			ssize_t r = ::read(fd, &b, 1);
-			if (r != 1) throw std::runtime_error("Unable to read a byte.");
 			if (r < 0) throw std::runtime_error(std::string("Unable to read: ") + strerror(errno));
+			if (r != 1) throw std::runtime_error("Unable to read a byte.");
 			return b;
 		}
 	}
