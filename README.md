@@ -65,7 +65,7 @@ Furthermore, the following commmands map directly to the commands specified in t
 | `'X'`   |           |       | Bulk Erase Program Memory
 | `'Y'`   |           |       | Row Erase Program Memory
 
-Parameters and replies are 14 bits, encoded as two bytes with the most significant bits set:
+Parameters and replies are 14 bits, encoded as two bytes with the most significant bit set:
 The least significant 7 of the first byte contain the most significant 7 bits of the data,
 the least significant 7 bits of the second byte contain the least significant 7 bits of the data.
 
