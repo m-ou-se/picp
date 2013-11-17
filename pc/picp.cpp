@@ -6,57 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/select.h>
 
-struct Port {
-
-private:
-	int fd;
-
-	Port(Port const &);
-	Port & operator = (Port const &);
-
-public:
-
-	Port(char const * f) {
-		fd = open(f, O_RDWR);
-		if (fd < 0) throw std::runtime_error(std::string("Unable to open ") + f + ".");
-	}
-
-	void write(uint8_t b) {
-		if (::write(fd, &b, 1) < 0) throw std::runtime_error(std::string("Unable to write: ") + strerror(errno));
-	}
-
-	uint8_t read() {
-		{
-			timeval timeout;
-			timeout.tv_sec = 0;
-			timeout.tv_usec = 100000;
-			fd_set fds;
-			FD_ZERO(&fds);
-			FD_SET(fd, &fds);
-			int r = select(fd + 1, &fds, 0, 0, &timeout);
-			if (r < 0) throw std::runtime_error(std::string("Unable to read. select(): ") + strerror(errno));
-			if (r == 0) throw std::runtime_error("Unable to read: Timeout.");
-		}
-		{
-			uint8_t b;
-			ssize_t r = ::read(fd, &b, 1);
-			if (r < 0) throw std::runtime_error(std::string("Unable to read: ") + strerror(errno));
-			if (r != 1) throw std::runtime_error("Unable to read a byte.");
-			return b;
-		}
-	}
-
-	~Port() {
-		close(fd);
-	}
-
-};
+#ifdef _WIN32
+#include "windows.hpp"
+#else
+#include "linux.hpp"
+#endif
 
 struct Icsp {
 
@@ -222,21 +177,21 @@ int main(int argc, char * * argv) try {
 
 	if (argc <= 1) {
 		std::clog << "Usage: \n";
-		std::clog << '\t' << argv[0] << " /dev/picp0\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] check\n\t\tCheck connection with programmer.\n\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] reset\n\t\tReset target.\n\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] config\n\t\tShow the configuration words.\n\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] dump [> file]\n\t\tRead the program and configuration memory, and dump it in Intel HEX format.\n\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] program [< file]\n\t\tFlash the given program (and optionally, configuration and user id words) (in Intel HEX format) to the connected chip.\n\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] erase\n\t\tErase the program and configuration memory, excluding the four user id words.\n\n";
-		std::clog << '\t' << argv[0] << " [/dev/picp0] eraseall\n\t\tErase the program and configuration memory, including the four user id words.\n\n";
+		std::clog << '\t' << argv[0] << " " << default_port << "\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] check\n\t\tCheck connection with programmer.\n\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] reset\n\t\tReset target.\n\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] config\n\t\tShow the configuration words.\n\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] dump [> file]\n\t\tRead the program and configuration memory, and dump it in Intel HEX format.\n\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] program [< file]\n\t\tFlash the given program (and optionally, configuration and user id words) (in Intel HEX format) to the connected chip.\n\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] erase\n\t\tErase the program and configuration memory, excluding the four user id words.\n\n";
+		std::clog << '\t' << argv[0] << " [" << default_port << "] eraseall\n\t\tErase the program and configuration memory, including the four user id words.\n\n";
 		return 1;
 	}
 
-	char const * dev = "/dev/picp0";
+	char const * dev = default_port;
 	std::string command;
 	size_t n_args = 0;
-	if (argv[1] && argv[1][0] == '/') {
+	if (argv[1] && is_port(argv[1])) {
 		dev = argv[1];
 		if (argv[2]) {
 			command = argv[2];

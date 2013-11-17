@@ -4,7 +4,7 @@ PICP
 This folder contains `picp`, a PIC16F145x based PIC16F145x programmer.
 
 To program a PIC16F145x with this, all you need is a PIC16F145x programmed
-with the software in `pic/` connected with USB to a Linux computer with the
+with the software in `pic/` connected with USB to a computer with the
 software in `pc/`. (So you still need to get the first PIC programmed
 somehow, but after that, you have a very simple and cheap programmer.)
 
@@ -14,14 +14,18 @@ that's to be programmed.
 The reset, data and clock pins are set to high impedance while not programming,
 so the programmer can be left connected while running your application.
 
-It's probably pretty easy to port the PC software to other operating systems.
+The `picp` PC software works on both Linux and Windows (and probably on
+any POSIX system).
 
 Usage
 -----
 
 1. Program a PIC16F145x with the software in `pic/`.
-2. Compile the software in `pc/` and put the resulting `picp` executable somewhere in your `PATH`. (e.g. `/usr/local/bin`)
-3. Copy `udev/40-picp.rules` to `/etc/udev/rules.d/`.
+2. Compile the software in `pc/` and
+   (optionally) put the resulting `picp` executable somewhere in your `PATH`.
+   (e.g. `/usr/local/bin`)
+3. On Linux: Copy `udev/40-picp.rules` to `/etc/udev/rules.d/`.
+   On Windows: Connect the programmer and install the 'driver' from `inf/` using the device manager.
 4. Connect the ICSP pins (RC0 and RC1) of the programmer and the
    to-be-programmed chip, and connect RC2 of the programmer to the reset pin
    (RA3) of the to-be-programmed chip.
@@ -33,7 +37,8 @@ Protocol
 
 The programmer is a USB ACM device, which basically means it acts like a
 simplified serial port. (Linux will recognize it and make a `/dev/ttyACMx` for it,
-which is symlinked from `/dev/picp0` if you use the provided udev rule.)
+which is symlinked from `/dev/picp0` if you use the provided udev rule.
+Windows will make a virtual serial port `COMx`, if you use the provided `inf` file.)
 
 The protocol that's used to talk with the programmer is very simple.
 Commands are just single bytes (ASCII characters),

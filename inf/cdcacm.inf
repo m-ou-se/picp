@@ -1,0 +1,77 @@
+[Version]
+Signature="$Windows NT$"
+Class=Ports
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
+Provider=%MFGNAME%
+LayoutFile=layout.inf
+CatalogFile=%MFGFILENAME%.cat
+DriverVer=11/15/2007,5.1.2600.0
+
+[Manufacturer]
+%MFGNAME%=DeviceList, NTamd64
+
+[DestinationDirs]
+DefaultDestDir=12
+
+[DriverInstall.nt]
+include=mdmcpq.inf
+CopyFiles=DriverCopyFiles.nt
+AddReg=DriverInstall.nt.AddReg
+
+[DriverCopyFiles.nt]
+usbser.sys,,,0x20
+
+[DriverInstall.nt.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,%DRIVERFILENAME%.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+[DriverInstall.nt.Services]
+AddService=usbser, 0x00000002, DriverService.nt
+
+[DriverService.nt]
+DisplayName=%SERVICE%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\%DRIVERFILENAME%.sys
+
+[DriverInstall.NTamd64]
+include=mdmcpq.inf
+CopyFiles=DriverCopyFiles.NTamd64
+AddReg=DriverInstall.NTamd64.AddReg
+
+[DriverCopyFiles.NTamd64]
+%DRIVERFILENAME%.sys,,,0x20
+
+[DriverInstall.NTamd64.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,%DRIVERFILENAME%.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+[DriverInstall.NTamd64.Services]
+AddService=usbser, 0x00000002, DriverService.NTamd64
+
+[DriverService.NTamd64]
+DisplayName=%SERVICE%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\%DRIVERFILENAME%.sys
+
+[SourceDisksFiles]
+[SourceDisksNames]
+
+[DeviceList]
+%DESCRIPTION%=DriverInstall, USB\VID_0000&PID_0000
+
+[DeviceList.NTamd64] 
+%DESCRIPTION%=DriverInstall, USB\VID_0000&PID_0000
+
+[Strings]
+MFGFILENAME="USB Virtual COM-port"
+DRIVERFILENAME ="usbser"
+MFGNAME="Mara Bos"
+DESCRIPTION="PICP"
+SERVICE="USB Virtual COM-port"
+
