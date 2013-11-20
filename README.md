@@ -32,6 +32,8 @@ Usage
 5. Connect the programmer with USB, and use `picp program < file` to
    flash a program.
 
+Compiled binaries of both the PIC and the PC software can be found on Github: https://github.com/m-ou-se/picp/releases
+
 Protocol
 --------
 
