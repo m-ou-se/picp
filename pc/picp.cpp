@@ -76,7 +76,7 @@ uint8_t hex_byte(std::string & s, size_t i = 0) {
 	return hex_value(s[i]) << 4 | hex_value(s[i+1]);
 }
 
-struct memory_dump {
+struct MemoryDump {
 
 	uint16_t memory[0x2000];
 	uint16_t user_id[4];
@@ -90,7 +90,7 @@ struct memory_dump {
 	bool device_id_set = false;
 	bool configuration_set = false;
 
-	memory_dump() {
+	MemoryDump() {
 		std::fill(std::begin(memory), std::end(memory), 0x3FFF);
 	}
 
@@ -305,7 +305,7 @@ int main(int argc, char * * argv) try {
 		std::clog << "Done." << std::endl;
 
 	} else if (n_args == 0 && command == "program") {
-		memory_dump m;
+		MemoryDump m;
 		std::clog << "Reading Intel HEX formatted data..." << std::endl;
 		m.load_ihex(std::cin);
 		connect();
