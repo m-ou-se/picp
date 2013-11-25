@@ -76,6 +76,14 @@ Parameters and replies are 14 bits, encoded as two bytes with the most significa
 The least significant 7 of the first byte contain the most significant 7 bits of the data,
 the least significant 7 bits of the second byte contain the least significant 7 bits of the data.
 
+USB Vendor and Product ID
+-------------------------
+
+The USB ID for `picp` is `1d50:6088`.
+This ID comes from OpenMoko Inc., who are so kind to
+[give away](http://wiki.openmoko.org/wiki/USB_Product_IDs)
+their product IDs to open source projects like this.
+
 Schematic
 ---------
 

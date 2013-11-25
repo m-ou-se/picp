@@ -11,8 +11,8 @@ ROM USB_DEVICE_DESCRIPTOR device_dsc = {
 	0x00,       // subclass
 	0x00,       // protocol
 	USB_EP0_BUFF_SIZE,
-	0x0000,     // vendor ID
-	0x0000,     // product ID
+	0x1d50,     // vendor ID
+	0x6088,     // product ID
 	0x0100,     // device release number
 	0x01,       // manufacturer string index
 	0x02,       // product string index

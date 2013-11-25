@@ -63,10 +63,10 @@ ServiceBinary=%12%\%DRIVERFILENAME%.sys
 [SourceDisksNames]
 
 [DeviceList]
-%DESCRIPTION%=DriverInstall, USB\VID_0000&PID_0000
+%DESCRIPTION%=DriverInstall, USB\VID_1D50&PID_6088
 
 [DeviceList.NTamd64] 
-%DESCRIPTION%=DriverInstall, USB\VID_0000&PID_0000
+%DESCRIPTION%=DriverInstall, USB\VID_1D50&PID_6088
 
 [Strings]
 MFGFILENAME="USB Virtual COM-port"

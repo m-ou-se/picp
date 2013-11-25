@@ -1,1 +1,1 @@
-SUBSYSTEM=="tty", ATTRS{idVendor}=="0000", ATTRS{idProduct}=="0000" ATTRS{manufacturer}=="Mara Bos <m-ou.se@m-ou.se>", ATTRS{product}=="PIC16F145x Programmer", TAG+="uaccess", SYMLINK+="picp%n"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6088" ATTRS{manufacturer}=="Mara Bos <m-ou.se@m-ou.se>", ATTRS{product}=="PIC16F145x Programmer", TAG+="uaccess", SYMLINK+="picp%n"
