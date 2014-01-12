@@ -87,18 +87,18 @@ ROM BYTE configDescriptor1[] = {
 	// Endpoint Descriptor
 	0x07,
 	USB_DESCRIPTOR_ENDPOINT,
-	_EP02_OUT,  // endpoint address
-	_BULK,      // attributes
-	0x40, 0x00, // size
-	0x00,       // interval
+	_EP02_OUT,                  // endpoint address
+	_BULK,                      // attributes
+	CDC_DATA_OUT_EP_SIZE, 0x00, // size
+	0x00,                       // interval
 
 	// Endpoint Descriptor
 	0x07,
 	USB_DESCRIPTOR_ENDPOINT,
-	_EP02_IN,   // endpoint address
-	_BULK,      // attributes
-	0x40, 0x00, // size
-	0x00,       // interval
+	_EP02_IN,                  // endpoint address
+	_BULK,                     // attributes
+	CDC_DATA_IN_EP_SIZE, 0x00, // size
+	0x00,                      // interval
 };
 
 // Language code string descriptor

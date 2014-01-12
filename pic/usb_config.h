@@ -17,5 +17,5 @@
 
 #define CDC_DATA_INTF_ID      1
 #define CDC_DATA_EP           2
-#define CDC_DATA_OUT_EP_SIZE 64
-#define CDC_DATA_IN_EP_SIZE  64
+#define CDC_DATA_OUT_EP_SIZE  1
+#define CDC_DATA_IN_EP_SIZE   1
