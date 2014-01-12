@@ -230,7 +230,7 @@ int main(int argc, char * * argv) try {
 			else if (device_id == 0x3025) device_name = "PIC16LF1455";
 			else if (device_id == 0x3023) device_name = "PIC16F1459";
 			else if (device_id == 0x3027) device_name = "PIC16LF1459";
-			else if (device_id == 0x3FFF) throw std::runtime_error("No target found.");
+			else if (device_id == 0x3FFF || device_id == 0) throw std::runtime_error("No target found.");
 			std::clog << "Connected to " << device_name << "." << std::endl;
 		}
 	};
