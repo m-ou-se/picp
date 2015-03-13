@@ -125,7 +125,7 @@ int main(void) {
 			else if (cmd == 'E') icsp_end();
 			else if (cmd == 'C') { unsigned int value; if (read_value(&value)) { icsp_cmd(icsp_cmd_load_configuration); icsp_parameter(value); } }
 			else if (cmd == 'L') { unsigned int value; if (read_value(&value)) { icsp_cmd(icsp_cmd_load_data); icsp_parameter(value); } }
-			else if (cmd == 'R') { icsp_cmd(icsp_cmd_read_data); (write_value(icsp_read()); }
+			else if (cmd == 'R') { icsp_cmd(icsp_cmd_read_data); write_value(icsp_read()); }
 			else if (cmd == 'I') icsp_cmd(icsp_cmd_increment_address);
 			else if (cmd == 'A') icsp_cmd(icsp_cmd_reset_address);
 			else if (cmd == 'P') icsp_cmd(icsp_cmd_begin_programming);
