@@ -2,6 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <termios.h>
 #include <sys/select.h>
 
 struct Port {
@@ -17,6 +18,14 @@ public:
 	Port(char const * f) {
 		fd = open(f, O_RDWR);
 		if (fd < 0) throw std::runtime_error(std::string("Unable to open ") + f + ".");
+		termios tty;
+		if (tcgetattr(fd, &tty) < 0) throw std::runtime_error(std::string("Error in tcgetattr: ") + strerror(errno));
+		cfmakeraw(&tty);
+		tty.c_cc[VMIN] = 1;
+		tty.c_cc[VTIME] = 10;
+		tty.c_cflag &= ~CSTOPB & ~CRTSCTS;
+		tty.c_cflag |= CLOCAL | CREAD;
+		if (tcsetattr(fd, TCSANOW, &tty) < 0) throw std::runtime_error(std::string("Error in tcsetattr: ") + strerror(errno));
 	}
 
 	void write(uint8_t b) {
